@@ -8,6 +8,7 @@ public abstract class Client {
     private String name;
     private String id;
     private double balance;
+    protected double actionRadius = 3.0; // default 3 km
     private List<Service> service = new ArrayList<>();
 
     public Client(String code, String name) {
@@ -38,6 +39,14 @@ public abstract class Client {
 
     public void addCredit(double amount) {
         this.balance += amount;
+    }
+
+    public void setActionRadius(double radius) {
+        this.actionRadius = radius;
+    }
+
+    public double getActionRadius() {
+        return this.actionRadius;
     }
 
 
