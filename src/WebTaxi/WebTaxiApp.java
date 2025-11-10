@@ -20,6 +20,7 @@ public class WebTaxiApp {
             System.out.println("7. List client services and balance");
             System.out.println("8. List driver services and earnings");
             System.out.println("9. Show total kilometers per driver");
+            System.out.println("10. Driver type with most services");
             System.out.println("0. Exit");
             System.out.print("Option: ");
             String op = sc.nextLine();
@@ -113,6 +114,24 @@ public class WebTaxiApp {
                     }
                     System.out.println("Total kilometers driven: " + String.format("%.2f", drvKm.getTotalKilometers()));
                     break;
+                case "10": // Nova opção no menu
+                    int rookieCount = 0;
+                    int veteranCount = 0;
+
+                    for(Driver d : p.listDrivers()) {
+                        if(d instanceof RookieDriver) rookieCount += d.getServices().size();
+                        else if(d instanceof VeteranDriver) veteranCount += d.getServices().size();
+                    }
+
+                    if(rookieCount > veteranCount) {
+                        System.out.println("Type of driver with most services: RookieDriver (" + rookieCount + " services)");
+                    } else if(veteranCount > rookieCount) {
+                        System.out.println("Type of driver with most services: VeteranDriver (" + veteranCount + " services)");
+                    } else {
+                        System.out.println("Both types of drivers have the same number of services: " + rookieCount);
+                    }
+                    break;
+
                 default:
                     System.out.println("Invalid option");
             }
