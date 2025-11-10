@@ -1,6 +1,4 @@
-package WebTaxi.model;// Source - https://stackoverflow.com/q
-// Posted by EthanZ6174, modified by community. See post 'Timeline' for change history
-// Retrieved 2025-11-10, License - CC BY-SA 3.0
+package WebTaxi.model;
 
 
 public abstract class Service {
