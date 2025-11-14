@@ -57,14 +57,17 @@ public abstract class Client {
 
     public abstract double getDescontoPercent(Service s);
 
+    @Override
     public String toString() {
-        return "WebTaxi.model.Client{" +
-                "name='" + name + '\'' +
-                ", id=" + id +
-                ", balance=" + balance +
-                ", service=" + service +
-                '}';
+        return String.format(
+                "Client %s (ID: %s) | Balance: %.1f | Services: %d",
+                name,
+                id,
+                balance,
+                service.size()
+        );
     }
+
 
 
 

@@ -1,6 +1,6 @@
 package WebTaxi.model;
 
-public class DeliveryMeal extends Service {
+public class DeliveryMeal extends Service implements SpecialService{
 
     private String mealName;
     private String restaurant;
@@ -24,5 +24,10 @@ public class DeliveryMeal extends Service {
     @Override
     public String toString() {
         return super.toString() + String.format(" [Meal: %s, Restaurant: %s]", mealName, restaurant);
+    }
+
+    @Override
+    public double calculateFixedCommission() {
+        return price * FIXED_COMMISSION_PERCENT; // 1% fixo
     }
 }

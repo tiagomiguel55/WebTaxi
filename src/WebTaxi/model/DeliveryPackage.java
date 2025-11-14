@@ -1,6 +1,6 @@
 package WebTaxi.model;
 
-public class DeliveryPackage extends Service {
+public class DeliveryPackage extends Service implements SpecialService {
 
     private double weight;
 
@@ -17,5 +17,10 @@ public class DeliveryPackage extends Service {
     @Override
     public String toString() {
         return super.toString() + String.format(" [Package weight: %.2f kg]", weight);
+    }
+
+    @Override
+    public double calculateFixedCommission() {
+        return price * FIXED_COMMISSION_PERCENT; // 1% fixo
     }
 }

@@ -47,20 +47,25 @@ public class Platform {
         List<Driver> candidates = new ArrayList<>();
         double radius = 3.0;
 
-        // Se houver cliente, usa o actionRadius; se não, mantém 3 km
+        // Se houver cliente, usa o actionRadius
         if (s.client != null) {
             radius = s.client.getActionRadius();
         }
 
-        // Seleção de candidatos
+        // Selecionar candidatos com base no tipo de serviço
         for (Driver d : drivers.values()) {
+            // Filtrar por tipo de condutor
+            if (s instanceof LuxuryTrip && !(d instanceof LuxuryDriver)) continue;
+            if (!(s instanceof LuxuryTrip) && d instanceof LuxuryDriver) continue;
+
+            // Filtrar por distância
             double d2 = util.GeoUtils.distance(s.ox, s.oy, d.getX(), d.getY());
             if (d2 <= radius) candidates.add(d);
         }
 
         if (candidates.isEmpty()) return false;
 
-        // Escolher condutor mais próximo
+        // Escolher o condutor mais próximo
         Driver chosen = null;
         double best = Double.MAX_VALUE;
         for (Driver d : candidates) {
@@ -88,6 +93,7 @@ public class Platform {
 
         return true;
     }
+
 
     public double genderProportion() {
         int male = 0;
@@ -265,6 +271,17 @@ public class Platform {
             System.out.printf("Day %d: %s (%d)%n", i, "*".repeat(count), count);
         }
     }
+
+    public boolean registerRideSharing(Driver requester, double dx, double dy) {
+        // O condutor que pede a boleia é treated como "cliente"
+        RideSharing rs = new RideSharing(12, 3, requester.getX(), requester.getY(), dx, dy);
+        rs.setDriver(requester); // define quem está a pedir a boleia
+        rs.calculatePrice(0); // preço fixo
+        requester.addService(rs);
+        services.add(rs);
+        return true;
+    }
+
 
 
     public List<Service> getServices(){ return services; }

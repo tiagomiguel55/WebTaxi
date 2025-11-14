@@ -52,6 +52,11 @@ public abstract class Service {
     }
 
     public double getCommissionValue(Driver driver) {
+        // If the service is a SpecialService (e.g., RideSharing), return its fixed commission
+        if (this instanceof SpecialService special) {
+            return special.calculateFixedCommission();
+        }
+
         double pct = driver.calculateCommissionPercent(this);
         return price * pct;
     }
@@ -61,6 +66,3 @@ public abstract class Service {
         return String.format("Service(%s) price=%.2f km=%.2f h=%02d d=%d", this.getClass().getSimpleName(), price, distanceKm, hour, weekDay);
     }
 }
-
-
-

@@ -1,8 +1,8 @@
 package WebTaxi.model;
 
-public class RideSharing extends Service {
+public class RideSharing extends Service implements SpecialService {
 
-    private static final double FIXED_PRICE = 5.0; // valor fixo para a boleia
+    private static final double FIXED_PRICE = 5.0;
 
     public RideSharing(int hour, int weekDay, double ox, double oy, double dx, double dy) {
         super(hour, weekDay, ox, oy, dx, dy);
@@ -15,7 +15,12 @@ public class RideSharing extends Service {
 
     @Override
     public Client getClient() {
-        return null; // não há cliente, apenas condutores
+        return null; // Não há cliente, é um condutor que pede a boleia
+    }
+
+    @Override
+    public double calculateFixedCommission() {
+        return price * FIXED_COMMISSION_PERCENT;
     }
 
     @Override

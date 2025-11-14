@@ -30,6 +30,7 @@ public class WebTaxiApp {
             System.out.println("16. Service histogram by day");
             System.out.println("17. Set client action radius");
             System.out.println("18. Register RideSharing request for a driver");
+            System.out.println("19. Launch luxury trip request");
             System.out.println("0. Exit");
             System.out.print("Option: ");
             String op = sc.nextLine();
@@ -39,7 +40,7 @@ public class WebTaxiApp {
                 case "1":
                     System.out.println("--- Clients ---");
                     for (Client c : p.listClients()) {
-                        System.out.println(c + " | Services: " + c.getService().size());
+                        System.out.println(c);
                     }
                     break;
                 case "2":
@@ -162,7 +163,7 @@ public class WebTaxiApp {
                     double x2 = sc.nextDouble();
                     System.out.print("Enter y2: ");
                     double y2 = sc.nextDouble();
-
+                    sc.nextLine();
                     List<Driver> driversInRegion = p.getDriversInRegion(x1, y1, x2, y2);
                     if (driversInRegion.isEmpty()) {
                         System.out.println("No drivers found in the region.");
@@ -201,18 +202,28 @@ public class WebTaxiApp {
                         System.out.println("Client not found.");
                     }
                     break;
-                case "18": // nova opção
+                case "18": // Registrar RideSharing
                     System.out.print("Enter driver code requesting ride: ");
-                    String driverCode = sc.next();
-                    sc.nextLine();
+                    String driverCode = sc.nextLine();
                     Driver driver = p.getDriver(driverCode);
                     if (driver != null) {
-                        RideSharing rs = new RideSharing(15, 3, driver.getX(), driver.getY(), driver.getX() + 1, driver.getY() + 1);
-                        rs.setDriver(driver);
-                        p.launchRequest(rs);
+                        // apenas um exemplo: o destino fica 1km a norte e 1km a leste
+                        p.registerRideSharing(driver, driver.getX() + 1, driver.getY() + 1);
                         System.out.println("RideSharing registered for driver " + driver.getCode());
                     } else {
                         System.out.println("Driver not found.");
+                    }
+                    break;
+                case "19": // Launch a luxury trip
+                    Client luxuryClient = p.getClient("C6"); // Fernando
+                    LuxuryTrip luxTrip = new LuxuryTrip(15, 3, 5.0, 5.0, 8.0, 9.0);
+                    luxTrip.setClient(luxuryClient);
+                    boolean assigned = p.launchRequest(luxTrip);
+                    if (assigned) {
+                        System.out.println("Luxury trip assigned to driver: " + luxTrip.getDriver().getName());
+                        System.out.println("Price charged: " + String.format("%.2f", luxTrip.getPrice()));
+                    } else {
+                        System.out.println("Failed to assign luxury trip (no luxury driver/insufficient balance)");
                     }
                     break;
 
@@ -240,12 +251,15 @@ public class WebTaxiApp {
         c4.addCredit(250.0);
         Client c5 = new RegularClient("C5", "Eva");
         c5.addCredit(120.0);
+        Client c6 = new FrequentClient("C6", "Fernando");
+        c6.addCredit(300.0);
 
         p.registerClient(c1);
         p.registerClient(c2);
         p.registerClient(c3);
         p.registerClient(c4);
         p.registerClient(c5);
+        p.registerClient(c6);
 
         // -------------------
         // Condutores
@@ -255,12 +269,16 @@ public class WebTaxiApp {
         Driver d3 = new RookieDriver("D3", "João", "M", 1.2, 0.8, 2);
         Driver d4 = new VeteranDriver("D4", "Clara", "F", 2.5, 2.0, 48, 0.15);
         Driver d5 = new RookieDriver("D5", "Lucas", "M", 0.8, 1.5, 1);
+        Driver d6 = new LuxuryDriver("D6", "Beatriz", "F", 5.0, 5.0, 20); // novo condutor de luxo
+        Driver d7 = new LuxuryDriver("D7", "Rafael", "M", 3.0, 3.0, 25); // outro condutor de luxo
 
         p.registerDriver(d1);
         p.registerDriver(d2);
         p.registerDriver(d3);
         p.registerDriver(d4);
         p.registerDriver(d5);
+        p.registerDriver(d6);
+        p.registerDriver(d7);
 
         // -------------------
         // Serviços - viagens normais (Trip)
@@ -268,12 +286,15 @@ public class WebTaxiApp {
         Trip t1 = new Trip(10, 2, 0.0, 0.0, 2.0, 1.5);
         t1.setClient(c1);
         p.launchRequest(t1);
+
         Trip t2 = new Trip(14, 3, 1.0, 0.5, 3.0, 1.8);
         t2.setClient(c1);
         p.launchRequest(t2);
+
         Trip t3 = new Trip(9, 1, 0.2, 0.1, 1.5, 1.0);
         t3.setClient(c2);
         p.launchRequest(t3);
+
         Trip t4 = new Trip(20, 5, 2.0, 1.5, 4.0, 3.0);
         t4.setClient(c2);
         p.launchRequest(t4);
@@ -304,13 +325,24 @@ public class WebTaxiApp {
         // Serviços especiais - RideSharing (boleia)
         // -------------------
         RideSharing rs1 = new RideSharing(17, 3, 1.0, 1.0, 2.0, 1.5);
-        rs1.setDriver(d1); // d1 pede boleia a outro condutor
+        rs1.setDriver(d1); // d1 pede boleia
         p.launchRequest(rs1);
 
         RideSharing rs2 = new RideSharing(18, 4, 2.0, 1.5, 3.0, 2.0);
         rs2.setDriver(d3); // d3 pede boleia
         p.launchRequest(rs2);
-    }
 
+        // -------------------
+        // NOVO tipo - LuxuryTrip (com LuxuryDriver)
+        // -------------------
+        LuxuryTrip lux1 = new LuxuryTrip(19, 5, 5.0, 5.0, 7.0, 8.0);
+        lux1.setClient(c6);
+        p.launchRequest(lux1);
+
+        LuxuryTrip lux2 = new LuxuryTrip(11, 2, 4.0, 4.0, 5.5, 6.5);
+        lux2.setClient(c6);
+        p.launchRequest(lux2);
+    }
 }
+
 
